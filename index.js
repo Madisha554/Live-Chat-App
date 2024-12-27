@@ -35,8 +35,28 @@ io.on('connection', socket => {
 
   //upon connection -on;y to user
 
-  socket.emit('message', 'Welcome to the chat App');
+  socket.emit('message', buildMsg(ADMIN, 'Welcome to Chat Room!'));
+  socket.on('enterRoom', ({ name, room }) => {
 
+    //Leave the previous room
+    const preRoom = getUser(socket.id)?.room;
+    if (preRoom) {
+      socket.leave(preRoom);
+      io.to(preRoom).emit('message', buildMsg(ADMIN, `${name} has left the room`));
+    }
+    //Cannot update the user until the user has left the room
+    const user = activateUsers(socket.id, name, room);
+    if(preRoom) {
+      io.to(preRoom).emit('userList', {
+        users: getUsersInRoom(preRoom)
+      })
+    }
+    //Join the room
+    socket.join(user.room);
+
+    //To user who just joined
+    socket.emit('message', buildMsg(ADMIN, `Welcome ${user.name}`));
+  });
   //broadcast to all users except the user
 
   socket.broadcast.emit('message', `User ${socket.id.substring(0, 5)} connected`);
