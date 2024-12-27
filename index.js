@@ -85,13 +85,10 @@ const activateUsers = (id, name, room) => {
 }
 
 // Users leaveApp 
-
 const userLeaveApp = (id ) =>{
   UsersState.setUsers(UsersState.users.filter(user => user.id !== id));
 }
-
 // Get user
-
 const getUser = (id) => {
   return UsersState.users.find(user => user.id === id);
 }   
