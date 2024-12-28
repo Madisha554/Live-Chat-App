@@ -17,13 +17,15 @@ const expressServer = app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`)
 })
 
-// state 
+// user state 
 const UsersState = {
     users: [],
     setUsers: function (newUsersArray) {
         this.users = newUsersArray
     }
 }
+
+// Cross origin resource sharing permissions
 
 const io = new Server(expressServer, {
     cors: {
@@ -32,6 +34,8 @@ const io = new Server(expressServer, {
 })
 
 io.on('connection', socket => {
+    const user = getUser(socket.id, socket.name)
+    
     console.log(`User ${socket.id} connected`)
 
     // Upon connection - only to user 
@@ -113,6 +117,8 @@ io.on('connection', socket => {
     })
 })
 
+// **Let's build function
+// Message functions
 function buildMsg(name, text) {
     return {
         name,
@@ -141,7 +147,7 @@ function userLeavesApp(id) {
     )
 }
 
-function getUser(id) {
+function getUser(id, name) {
     return UsersState.users.find(user => user.id === id)
 }
 
